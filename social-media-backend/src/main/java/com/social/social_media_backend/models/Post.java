@@ -1,6 +1,5 @@
-package com.social.social_media_backend;
+package com.social.social_media_backend.models;
 
-import com.social.social_media_backend.models.SocialUser;
 import jakarta.persistence.*;
 
 @Entity

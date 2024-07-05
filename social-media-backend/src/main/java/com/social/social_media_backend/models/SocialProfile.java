@@ -8,11 +8,10 @@ public class SocialProfile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "socialProfile") //this "socialProfile" is the field in SocialUser class
-    //If we use mappedBy attribute, we can skip @JoinColumn here because only one foreign key will now be generated
+    @OneToOne
+    @JoinColumn(name = "social_user")
     private SocialUser user;
 
-    //SocialProfile class is the non-owning side of the bidirectional OneToOne relationship
-    //non-owning side needs to use mappedBy attribute to tell that it is being managed by a field in owning side
-    //So, don't create a column over here
+    //SocialProfile is the owner of OneToOne relationship & socialProfile field is managing this bidirectional relationship
+    //@JoinColumn is only used in the owning side
 }

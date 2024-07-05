@@ -1,7 +1,5 @@
 package com.social.social_media_backend.models;
 
-import com.social.social_media_backend.SocialGroup;
-import com.social.social_media_backend.Post;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -15,11 +13,14 @@ public class SocialUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "social_profile_id")
+    @OneToOne(mappedBy = "user") //this "user" is the field in SocialProfile class
+    //@JoinColumn(name = "social_profile_id")
+    //If we use mappedBy attribute, we can skip @JoinColumn here because only one foreign key will now be generated
     private SocialProfile socialProfile;
-    //SocialUser is the owner of OneToOne relationship & socialProfile field is managing this bidirectional relationship
-    //@JoinColumn is only used in the owning side
+
+    //SocialUser class is the non-owning side of the bidirectional OneToOne relationship
+    //non-owning side needs to use mappedBy attribute to tell that it is being managed by a field in owning side
+    //So, don't create a column over here
 
     @OneToMany(mappedBy = "socialUser")
     private List<Post> posts = new ArrayList<>();
