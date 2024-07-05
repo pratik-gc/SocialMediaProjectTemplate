@@ -1,13 +1,16 @@
 package com.social.social_media_backend.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
+@Data
+//@NoArgsConstructor
+//@AllArgsConstructor
 public class SocialUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +35,53 @@ public class SocialUser {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private Set<SocialGroup> groups = new HashSet<>();
+
+  //================ Lombok Library doesn't work=======================
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public SocialProfile getSocialProfile() {
+        return socialProfile;
+    }
+
+    public void setSocialProfile(SocialProfile socialProfile) {
+        this.socialProfile = socialProfile;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public void setPosts(List<Post> posts) {
+        this.posts = posts;
+    }
+
+    public Set<SocialGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<SocialGroup> groups) {
+        this.groups = groups;
+    }
+
+    public SocialUser() {
+    }
+
+    public SocialUser(Long id, SocialProfile socialProfile, List<Post> posts, Set<SocialGroup> groups) {
+        this.id = id;
+        this.socialProfile = socialProfile;
+        this.posts = posts;
+        this.groups = groups;
+    }
+
+    //If we don't override hashcode(), we will get StackOverflowError
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
