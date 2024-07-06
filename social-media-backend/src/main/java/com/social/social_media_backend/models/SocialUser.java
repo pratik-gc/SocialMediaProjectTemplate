@@ -1,9 +1,7 @@
 package com.social.social_media_backend.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.*;
 
@@ -16,9 +14,26 @@ public class SocialUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "user") //this "user" is the field in SocialProfile class
+    //@OneToOne(mappedBy = "user") //this "user" is the field in SocialProfile class
+    //@OneToOne(mappedBy = "user", cascade = CascadeType.PERSIST) //PERSIST means only SAVE operation will be propagated
+                                                                // and not the DELETE operation
+    //@OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //@OneToOne(mappedBy = "user", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     //@JoinColumn(name = "social_profile_id")
     //If we use mappedBy attribute, we can skip @JoinColumn here because only one foreign key will now be generated
+    //@JsonIgnore //@JsonIgnore is used to avoid infinite recursion which causes StackOverflowError
+                  //If you add @JsonIgnore here, you will only see Id's of users and not other details
+                  //Therefore, move @JsonIgnore to the other side of the bidirectional relationship
+                  //@JsonIgnore is used to manage Circular References in bidirectional relationships
+                  //@JsonIgnore enables us to get rid of the infinite nesting of objects when we are dealing with
+                  //bidirectional relationships thus avoiding StackOverflowError.
+                  //When we add @JsonIgnore to any side of the bidirectional relationship, it tells you to
+                  // ignore that side from serialization & deserialization process from Object to JSON & vice-versa.
+        //Cascading is an operation where changes/modifications in one entity involved in a bidrectional relationship
+        //will propagate the same changes/modification in other entities that are in a relationship
+        //CascadeType.ALL lets hibernate know that all delete/save/update operations, as the case may be, need to be
+        //performed on all entities involved in the relationship.
     private SocialProfile socialProfile;
 
     //SocialUser class is the non-owning side of the bidirectional OneToOne relationship
@@ -26,6 +41,7 @@ public class SocialUser {
     //So, don't create a column over here
 
     @OneToMany(mappedBy = "socialUser")
+    //@JsonIgnore
     private List<Post> posts = new ArrayList<>();
 
     @ManyToMany
@@ -34,9 +50,10 @@ public class SocialUser {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
+    //@JsonIgnore
     private Set<SocialGroup> groups = new HashSet<>();
 
-  //================ Lombok Library doesn't work=======================
+  //========== Lombok Library doesn't work... Don't know why !!! ============
     public Long getId() {
         return id;
     }
@@ -49,7 +66,13 @@ public class SocialUser {
         return socialProfile;
     }
 
-    public void setSocialProfile(SocialProfile socialProfile) {
+//    public void setSocialProfile(SocialProfile socialProfile) {
+//        this.socialProfile = socialProfile;
+//    }
+
+    public void setSocialProfile(SocialProfile socialProfile){ //This customized setter is IMPORTANT bcz we are ensuring
+                                            //that both sides of bidirectional relationship are aware of the changes
+        socialProfile.setUser(this);
         this.socialProfile = socialProfile;
     }
 
@@ -84,4 +107,6 @@ public class SocialUser {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+
 }

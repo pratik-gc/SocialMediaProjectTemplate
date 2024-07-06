@@ -99,6 +99,8 @@ public class DataInitializer {
             socialProfileRepository.save(profile2);
             socialProfileRepository.save(profile3);
 
+
+
         };
     }
 }
